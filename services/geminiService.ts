@@ -23,7 +23,8 @@ const generateFallbackFortune = (name: string, date: string): DivinationResult =
 };
 
 export const getDivination = async (name: string, birthDate: string): Promise<DivinationResult> => {
-  const apiKey = import.meta.env.VITE_API_KEY;
+  const apiKey = process.env.API_KEY;
+
   if (!apiKey) {
     console.warn("API Key not found, using fallback divination.");
     return new Promise(resolve => setTimeout(() => resolve(generateFallbackFortune(name, birthDate)), 2000));
