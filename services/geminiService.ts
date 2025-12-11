@@ -23,10 +23,19 @@ const generateFallbackFortune = (name: string, date: string): DivinationResult =
 };
 
 export const getDivination = async (name: string, birthDate: string): Promise<DivinationResult> => {
-  const apiKey = process.env.API_KEY;
+  // 1. 尝试从环境变量获取 (AI Studio 环境标准做法)
+  const envKey = process.env.API_KEY;
 
-  if (!apiKey) {
-    console.warn("API Key not found, using fallback divination.");
+  // 2. 如果你想硬编码 Key，请填入下方引号内 (注意：必须保留引号 "")
+  // 例如: const hardcodedKey = "AIzaSy...";
+  const hardcodedKey = "AIzaSyA9TxxpjBnKX9HnRVFlov8C5wPSDfklcPM"; 
+
+  // 优先使用环境变量，如果没有则使用硬编码 Key
+  const apiKey = envKey || hardcodedKey;
+
+  if (!apiKey || apiKey.includes("在这里填入")) {
+    console.warn("API Key is missing or invalid. Using fallback mode.");
+    // 模拟网络延迟，然后返回本地算法结果
     return new Promise(resolve => setTimeout(() => resolve(generateFallbackFortune(name, birthDate)), 2000));
   }
 
@@ -82,6 +91,7 @@ export const getDivination = async (name: string, birthDate: string): Promise<Di
 
   } catch (error) {
     console.error("Divination failed:", error);
+    // Fallback to local generation if API fails (e.g. quota exceeded or invalid key)
     return generateFallbackFortune(name, birthDate);
   }
 };
